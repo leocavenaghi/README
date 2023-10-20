@@ -1,0 +1,129 @@
+#include <stdio.h>
+
+#define SIZE 10
+
+// Função para inicializar o tabuleiro
+void inicializarTabuleiro(char tabuleiro[SIZE][SIZE]) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            tabuleiro[i][j] = ' ';
+        }
+    }
+}
+
+// Função para exibir o tabuleiro
+void exibirTabuleiro(char tabuleiro[SIZE][SIZE]) {
+    printf("   1 2 3 4 5 6 7 8 9 10\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d  ", i + 1);
+        for (int j = 0; j < SIZE; j++) {
+            printf("%c ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// Função para posicionar navios
+void posicionarNavio(char tabuleiro[SIZE][SIZE], int linha, int coluna) {
+    if (linha >= 0 && linha < SIZE && coluna >= 0 && coluna < SIZE) {
+        tabuleiro[linha][coluna] = 'N'; // 'N' representa um navio
+    }
+}
+
+int main() {
+    char tabuleiro1[SIZE][SIZE];
+    char tabuleiro2[SIZE][SIZE];
+
+    // Inicializar tabuleiros
+    inicializarTabuleiro(tabuleiro1);
+    inicializarTabuleiro(tabuleiro2);
+
+    printf("Jogador 1, posicione seus navios:\n");
+    exibirTabuleiro(tabuleiro1);
+
+    // Jogador 1 posiciona seus navios
+    int linha, coluna;
+    for (int i = 0; i < 5; i++) {
+        printf("Digite a linha e coluna para o navio %d: ", i + 1);
+        scanf("%d %d", &linha, &coluna);
+        posicionarNavio(tabuleiro1, linha - 1, coluna - 1);
+    }
+
+    printf("Jogador 2, posicione seus navios:\n");
+    exibirTabuleiro(tabuleiro2);
+
+    // Jogador 2 posiciona seus navios
+    for (int i = 0; i < 5; i++) {
+        printf("Digite a linha e coluna para o navio %d: ", i + 1);
+        scanf("%d %d", &linha, &coluna);
+        posicionarNavio(tabuleiro2, linha - 1, coluna - 1);
+    }
+
+    // Jogo
+    int jogadorAtual = 1;
+    char tabuleiroAlvo[SIZE][SIZE];
+    char tabuleiroAtaque[SIZE][SIZE];
+    inicializarTabuleiro(tabuleiroAlvo);
+    inicializarTabuleiro(tabuleiroAtaque);
+
+    while (1) {
+        int alvo;
+        if (jogadorAtual == 1) {
+            printf("Jogador 1, é sua vez!\n");
+            exibirTabuleiro(tabuleiroAlvo);
+            printf("Digite a linha e coluna para atacar: ");
+            scanf("%d %d", &linha, &coluna);
+            alvo = tabuleiro2[linha - 1][coluna - 1];
+        } else {
+            printf("Jogador 2, é sua vez!\n");
+            exibirTabuleiro(tabuleiroAlvo);
+            printf("Digite a linha e coluna para atacar: ");
+            scanf("%d %d", &linha, &coluna);
+            alvo = tabuleiro1[linha - 1][coluna - 1];
+        }
+
+        // Verificar o resultado do ataque
+        if (alvo == 'N') {
+            printf("Acerto!\n");
+            tabuleiroAlvo[linha - 1][coluna - 1] = 'X'; // 'X' representa um navio atingido
+        } else {
+            printf("Erro!\n");
+            tabuleiroAlvo[linha - 1][coluna - 1] = 'O'; // 'O' representa um tiro na água
+        }
+
+        // Verificar se um jogador venceu
+        int naviosRestantes = 0;
+        if (jogadorAtual == 1) {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (tabuleiro2[i][j] == 'N') {
+                        naviosRestantes = 1;
+                        break;
+                    }
+                }
+                if (naviosRestantes) break;
+            }
+        } else {
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (tabuleiro1[i][j] == 'N') {
+                        naviosRestantes = 1;
+                        break;
+                    }
+                }
+                if (naviosRestantes) break;
+            }
+        }
+
+        if (!naviosRestantes) {
+            printf("Jogador %d venceu!\n", jogadorAtual);
+            break;
+        }
+
+        // Alternar o jogador
+        jogadorAtual = (jogadorAtual == 1) ? 2 : 1;
+    }
+
+    return 0;
+}
+
